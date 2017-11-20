@@ -469,7 +469,10 @@ namespace OCR
             }
         }
 
+        private void calcularea_salariului()
+        {
 
+        }
 
         // salariu method - calcul salariu pe zi din hartie
         // trebuie sa facem update si de salariu in master !!!
