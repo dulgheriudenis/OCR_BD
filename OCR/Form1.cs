@@ -337,7 +337,7 @@ namespace OCR
                 con.Open();
                 SqlCommand command = new SqlCommand("UPDATE Master SET [Total ore]='" + update_hours.ToString() + "'WHERE Id=" + int.Parse(index_inregistrare[i]), con);
                 command.ExecuteNonQuery(); //asndasd
-                con.Close();
+                con.Close(); ///dfsfds
             }
         }
         
