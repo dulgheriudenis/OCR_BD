@@ -586,7 +586,7 @@ namespace OCR
             }
         }
 
-        // salariu method - calcul salariu pe zi din hartie
+        //  salariu method - calcul salariu pe zi din hartie
         // trebuie sa facem update si de salariu in master !!!
 
     }
