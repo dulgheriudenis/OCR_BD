@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Aspose.OCR;
 using WinFormCharpWebCam;
@@ -20,13 +15,14 @@ namespace OCR
         OcrEngine ocr;
         WebCam webcam;
         
+        // Crearea conexiunii intre aplicatie si baza de date
         SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=E:\Work\Anul III\Semestrul I\Baze de date\Proiect\OCR\OCR\Database1.mdf;Integrated Security=True");
 
+        // Liste si variabile globale
         List<string> cod_angajat = new List<string>();
         List<string> id_intrare = new List<string>();
         List<string> cod_angajat_intrare = new List<string>();
         List<string> iesire_angajat = new List<string>();
-
         int incercari = 0;
         bool detectat = false;
         
@@ -44,13 +40,11 @@ namespace OCR
             webcam.InitializeWebCam(ref pictureBox1);
             webcam.Start();
             refresh_codes();
-            calculare_completare_salariu();
+            memory_today();
+            //set_the_flags(); 
         }
 
-
         //Metode auxiliare necesare implementarii functiilor programului
-       
-        // START ZONE
         private void refresh_codes()
         {
             con.Open();
@@ -59,14 +53,12 @@ namespace OCR
             while (reader.Read()) cod_angajat.Add(reader["Cod Angajat"].ToString());
             con.Close();
         }
-
         public string next_code_number()
         {
             cod_angajat.Clear();
             refresh_codes();
             return "00" + (int.Parse(cod_angajat.Last()) + 1).ToString();
         }
-
         public bool scanare()
         {
             while (detectat == false) 
@@ -107,8 +99,7 @@ namespace OCR
                 return detectat;
             }
             return detectat;
-        }
-        
+        }       
         private string pozition_in_table()
         {
             int contor = 0;
@@ -147,7 +138,6 @@ namespace OCR
 
             return "Angajatul nu s-a logat in prealabil !";
         }
-
         private int ore_muncite_pe_intrare_iesire(string intrare, string iesire)
         {
             string numar_intrare = "", numar_iesire = "";
@@ -163,13 +153,9 @@ namespace OCR
             else return 60 - int.Parse(numar_intrare) + int.Parse(numar_iesire);
 
         }
-        // FINISH ZONE
+      
 
-
-
-
-
-        // Metodele principale din spatele butoanelor
+        // Metodele din spatele butoanelor
 
         //Intrare                           Atentie ! Verifica daca nu este in concediu
         private void button1_Click(object sender, EventArgs e)
@@ -202,7 +188,6 @@ namespace OCR
              
 
         }
-
         //Iesire                           
         private void button3_Click_1(object sender, EventArgs e)
         {
@@ -273,27 +258,54 @@ namespace OCR
                 }
             }
         }
-
         //Statistici                        Atentie ! La cautarea orelor lucrate de x angajat mesajul apare de cate ori cauti !!
         private void button4_Click(object sender, EventArgs e)
         {
             Bilant show = new Bilant();
             show.Show();
         }
-
         //Admin zone                         Atentie ! Adauga o referinta in Master si Salarii la adaugarea unui nou anagajat !!
         private void button2_Click(object sender, EventArgs e)
         {
             Admin admin = new Admin(next_code_number());
             admin.Show();
         }
-                  
+
+
+        // Se verifica daca s-a inchis aplicatia , actualizeaza master-ul si dupa se apeleaza calcularea salariului
+        private void memory_today()
+        {
+            calculare_completare_salariu();
+            update_salariu_master();
+        }
         
+        //Matoda de actualizare a salariului si a totalului orelor muncite de catre angajati
+        private void update_salariu_master()
+        {
+            List<string> salariu = new List<string>();
+            List<string> cod_angajati = new List<string>();
 
-        // Update database per day
+            con.Open();
+            SqlCommand command = new SqlCommand("Select Salariu From Salarii", con);
+            SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read()) salariu.Add(reader["Salariu"].ToString());
+            con.Close();
 
-        // verifica daca s-a inchis aplicatia , actualizeaza master-ul si dupa se apeleaza calcularea salariului
+            con.Open();
+            SqlCommand command1 = new SqlCommand("Select [Cod angajat] From Master", con);
+            SqlDataReader reader1 = command1.ExecuteReader();
+            while (reader1.Read()) cod_angajati.Add(reader1["Cod angajat"].ToString());
+            con.Close();
 
+            for (int i = 0; i < salariu.Count(); i++)
+            {
+                con.Open();
+                SqlCommand command2 = new SqlCommand("UPDATE Master SET Salariu='" + salariu[i] + "' WHERE [Cod angajat]='" + cod_angajat[i] + "'", con);
+                command2.ExecuteNonQuery();
+                con.Close();
+            }
+
+        }
         private void update_day_work()
         {
             //     update total ore in master
@@ -313,7 +325,7 @@ namespace OCR
             con.Open();
             SqlCommand com = new SqlCommand("Select [Ore muncite] From Angajat", con);
             SqlDataReader reader = com.ExecuteReader();
-            while (reader.Read()) { index++; ore_muncite.Add(reader["Ore muncite"].ToString());};
+            while (reader.Read()) { index++; ore_muncite.Add(reader["Ore muncite"].ToString()); };
             con.Close();
 
             con.Open();
@@ -332,19 +344,69 @@ namespace OCR
                 int update_hours = int.Parse(total_ore[i]) + int.Parse(ore_muncite[i]);
                 con.Open();
                 SqlCommand command = new SqlCommand("UPDATE Master SET [Total ore]='" + update_hours.ToString() + "'WHERE Id=" + int.Parse(index_inregistrare[i]), con);
-                command.ExecuteNonQuery(); 
-                con.Close(); 
+                command.ExecuteNonQuery();
+                con.Close();
             }
         }
-        
-        private void erase_hours_for_today()
+
+        //Metode de actualizare a campurilor tabelei Salarii
+        private void update_spor_in_salariu(List<string> merit_spor)
+        {
+            for (int i = 0; i < merit_spor.Count(); i++)
+            {
+                if (int.Parse(merit_spor[i]) > 0)
+                {
+                    con.Open();
+                    SqlCommand command = new SqlCommand("UPDATE Salarii SET [Id spor]='2' WHERE Id=" + (i + 1), con);
+                    command.ExecuteNonQuery();
+                    con.Close();
+                }
+                if (int.Parse(merit_spor[i]) == 0)
+                {
+                    con.Open();
+                    SqlCommand command = new SqlCommand("UPDATE Salarii SET [Id spor]='0' WHERE Id=" + (i + 1), con);
+                    command.ExecuteNonQuery();
+                    con.Close();
+                }
+                if (int.Parse(merit_spor[i]) < 0)
+                {
+                    con.Open();
+                    SqlCommand command = new SqlCommand("UPDATE Salarii SET [Id spor]='3' WHERE Id=" + (i + 1), con);
+                    command.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+        private void update_concediu()
+        {
+            List<string> angajat = new List<string>();
+
+            con.Open();
+            SqlCommand command = new SqlCommand("Select [Cod angajat] from Salarii", con);
+            SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read()) angajat.Add(reader["Cod angajat"].ToString());
+            con.Close();
+
+            for (int i = 0; i < angajat.Count(); i++)
+            {
+                if (in_concediu(angajat[i].ToString()) == true)
+                {
+                    con.Open();
+                    SqlCommand command2 = new SqlCommand("UPDATE Salarii SET Concediu=1 WHERE [Cod angajat]='" + angajat[i].ToString() + "'", con);
+                    command2.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+        private void update_salariu(string salariu, string cod_angajat)
         {
             con.Open();
-            SqlCommand command = new SqlCommand("UPDATE Angajat SET [Ore muncite]='0'", con);
-            command.ExecuteNonQuery();
+            SqlCommand command2 = new SqlCommand("UPDATE Salarii SET Salariu='" + salariu + "' WHERE [Cod angajat]='" + cod_angajat + "'", con);
+            command2.ExecuteNonQuery();
             con.Close();
         }
-        
+
+            //Metode auxiliare ce ajuta la buna functionare a bazei de date
         private List<string> merit_spor()
         {
             //merit in functie de ordinea in angajat
@@ -370,35 +432,13 @@ namespace OCR
             
             return merit;
         }
-
-        private void update_spor_in_salariu(List<string> merit_spor)
+        private void erase_hours_for_today()
         {
-           for (int i = 0; i < merit_spor.Count(); i++)
-            {
-                if(int.Parse(merit_spor[i]) > 0)
-                {
-                    con.Open();
-                    SqlCommand command = new SqlCommand("UPDATE Salarii SET [Id spor]='2' WHERE Id=" + (i+1), con);
-                    command.ExecuteNonQuery();
-                    con.Close();
-                }
-                if (int.Parse(merit_spor[i]) == 0)
-                {
-                    con.Open();
-                    SqlCommand command = new SqlCommand("UPDATE Salarii SET [Id spor]='0' WHERE Id=" + (i+1), con);
-                    command.ExecuteNonQuery();
-                    con.Close();
-                }
-                if (int.Parse(merit_spor[i]) < 0)
-                {
-                    con.Open();
-                    SqlCommand command = new SqlCommand("UPDATE Salarii SET [Id spor]='3' WHERE Id=" + (i+1), con);
-                    command.ExecuteNonQuery();
-                    con.Close();
-                }
-            }
+            con.Open();
+            SqlCommand command = new SqlCommand("UPDATE Angajat SET [Ore muncite]='0'", con);
+            command.ExecuteNonQuery();
+            con.Close();
         }
-
         private bool in_concediu(string codul_angajatului)
         {
             List<string> angajati_in_concediu = new List<string>();
@@ -444,37 +484,6 @@ namespace OCR
             }
             return false; 
         }
-
-        private void update_concediu()
-        {
-            List<string> angajat = new List<string>(); 
-
-            con.Open();
-            SqlCommand command = new SqlCommand("Select [Cod angajat] from Salarii", con);
-            SqlDataReader reader = command.ExecuteReader();
-            while (reader.Read()) angajat.Add(reader["Cod angajat"].ToString());
-            con.Close();
-            
-            for (int i = 0; i < angajat.Count(); i++)
-            {
-                if (in_concediu(angajat[i].ToString()) == true)
-                {
-                    con.Open();
-                    SqlCommand command2 = new SqlCommand("UPDATE Salarii SET Concediu=1 WHERE [Cod angajat]='"+ angajat[i].ToString() +"'", con);
-                    command2.ExecuteNonQuery();
-                    con.Close();
-                }
-            }
-        }
-
-        private void update_salariu(string salariu,string cod_angajat)
-        {
-            con.Open();
-            SqlCommand command2 = new SqlCommand("UPDATE Salarii SET Salariu='" + salariu + "' WHERE [Cod angajat]='" + cod_angajat + "'", con); 
-            command2.ExecuteNonQuery();
-            con.Close();
-        }
-
         private void calculare_completare_salariu()
         { 
             List<string> angajati_in_concediu = new List<string>();
@@ -486,9 +495,9 @@ namespace OCR
 
             spor_meritat = merit_spor();
             
-            //update_day_work();
-            //update_spor_in_salariu(spor_meritat);
-            //update_concediu();
+            update_day_work();
+            update_spor_in_salariu(spor_meritat);
+            update_concediu();
 
             con.Open(); 
             SqlCommand command0 = new SqlCommand("Select [Cod angajat] from Salarii Where Concediu=1", con);
@@ -586,8 +595,39 @@ namespace OCR
             }
         }
 
-        //  salariu method - calcul salariu pe zi din hartie
-        // trebuie sa facem update si de salariu in master !!!
 
+        private void set_the_flags()
+        {
+            //verifica daca ziua scadenta difera de ziua de azi si atunci seteaza flag-ul pe 1
+        }
+
+            //Metoda prin care se platesc angajatii
+        private void verify_if_payday_is_now()
+        {
+            List<string> zi_scadenta = new List<string>();
+            List<string> flag = new List<string>();
+
+            con.Open();
+            SqlCommand command = new SqlCommand("Select [Zi scandeta] from Master",con);
+            SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read()) zi_scadenta.Add(reader["Zi scadenta"].ToString());
+            con.Close();
+
+            con.Open();
+            SqlCommand command2 = new SqlCommand("Select [Zi scandeta] from Master", con);
+            SqlDataReader reader2 = command2.ExecuteReader();
+            while (reader2.Read()) flag.Add(reader2["Zi scadenta"].ToString());
+            con.Close();
+
+            for(int i = 0; i < flag.Count(); i++)
+            {
+                if(zi_scadenta[i] == System.DateTime.Now.Day.ToString() && flag[i] == "1")
+                {
+                    //goleste salariu si total ore 
+                    //flag[i] devine 0
+                }
+                
+            }
+        }
     }
 }
