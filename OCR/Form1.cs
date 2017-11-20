@@ -336,7 +336,7 @@ namespace OCR
                 int update_hours = int.Parse(total_ore[i]) + int.Parse(ore_muncite[i]);
                 con.Open();
                 SqlCommand command = new SqlCommand("UPDATE Master SET [Total ore]='" + update_hours.ToString() + "'WHERE Id=" + int.Parse(index_inregistrare[i]), con);
-                command.ExecuteNonQuery();
+                command.ExecuteNonQuery(); //asndasd
                 con.Close();
             }
         }
@@ -358,7 +358,7 @@ namespace OCR
 
             // pune in listele de mai sus informatiile din tabelele
             con.Open();
-            SqlCommand command = new SqlCommand("Select [Ore muncite] from Angajat",con);
+            SqlCommand command = new SqlCommand("Select [Ore muncite] from Angajat");
 
             return merit;
         }
