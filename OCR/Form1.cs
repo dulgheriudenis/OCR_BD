@@ -45,7 +45,8 @@ namespace OCR
             webcam.Start();
             refresh_codes();
             //update_day_work();
-            cod_angajat=merit_spor();//sterge cod angajat
+            //update_spor_in_salariu(merit_spor());
+            //update_concediu();
         }
 
 
@@ -275,14 +276,14 @@ namespace OCR
             }
         }
 
-        //Statistici
+        //Statistici                        Atentie ! La cautarea orelor lucrate de x angajat mesajul apare de cate ori cauti !!
         private void button4_Click(object sender, EventArgs e)
         {
             Bilant show = new Bilant();
             show.Show();
         }
 
-        //Admin zone    Atentie ! Adauga o referinta in Master la adaugarea unui nou anagajat !!
+        //Admin zone                         Atentie ! Adauga o referinta in Master si Salarii la adaugarea unui nou anagajat !!
         private void button2_Click(object sender, EventArgs e)
         {
             Admin admin = new Admin(next_code_number());
@@ -290,10 +291,6 @@ namespace OCR
         }
                   
         
-
-
-
-
 
         // Update database per day
 
@@ -349,9 +346,10 @@ namespace OCR
             command.ExecuteNonQuery();
             con.Close();
         }
-        //merit in functie de ordinea in angajat
+        
         private List<string> merit_spor()
         {
+            //merit in functie de ordinea in angajat
             List<string> merit = new List<string>();
             List<string> ore_muncite = new List<string>();
             List<string> program = new List<string>();
@@ -370,17 +368,108 @@ namespace OCR
             con.Close();
 
             for (int i = 0; i < ore_muncite.Count(); i++)
-            {
                 merit.Add((int.Parse(ore_muncite[i].ToString()) - int.Parse(program[i].ToString())).ToString());
-            }
             
             return merit;
         }
 
         private void update_spor_in_salariu(List<string> merit_spor)
         {
-            //in functie de merti seface update in tabela salariu 
+           for (int i = 0; i < merit_spor.Count(); i++)
+            {
+                if(int.Parse(merit_spor[i]) > 0)
+                {
+                    con.Open();
+                    SqlCommand command = new SqlCommand("UPDATE Salarii SET [Id spor]='2' WHERE Id=" + (i+1), con);
+                    command.ExecuteNonQuery();
+                    con.Close();
+                }
+                if (int.Parse(merit_spor[i]) == 0)
+                {
+                    con.Open();
+                    SqlCommand command = new SqlCommand("UPDATE Salarii SET [Id spor]='0' WHERE Id=" + (i+1), con);
+                    command.ExecuteNonQuery();
+                    con.Close();
+                }
+                if (int.Parse(merit_spor[i]) < 0)
+                {
+                    con.Open();
+                    SqlCommand command = new SqlCommand("UPDATE Salarii SET [Id spor]='3' WHERE Id=" + (i+1), con);
+                    command.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
         }
+
+        private bool in_concediu(string codul_angajatului)
+        {
+            List<string> angajati_in_concediu = new List<string>();
+            string data_inceput, data_sfarsit;
+
+            con.Open();
+            SqlCommand command0 = new SqlCommand("Select [Cod angajat] from Concedii", con);
+            SqlDataReader reader0 = command0.ExecuteReader();
+            while (reader0.Read())
+            angajati_in_concediu.Add(reader0["Cod angajat"].ToString());
+            con.Close();
+
+            foreach(string s in angajati_in_concediu)
+            {
+                if (s == codul_angajatului)
+                {
+                    con.Open();
+                    SqlCommand command = new SqlCommand("Select [Data inceput de concediu] from Concedii WHERE [Cod angajat]=" + codul_angajatului, con);
+                    SqlDataReader reader = command.ExecuteReader();
+                    reader.Read();
+                    data_inceput = reader["Data inceput de concediu"].ToString();
+                    con.Close();
+
+                    con.Open();
+                    SqlCommand command2 = new SqlCommand("Select [Data sfarsit de concediu] from Concedii WHERE [Cod angajat]=" + codul_angajatului, con);
+                    SqlDataReader reader2 = command2.ExecuteReader();
+                    reader2.Read();
+                    data_sfarsit = reader2["Data sfarsit de concediu"].ToString();
+                    con.Close();
+
+                    DateTime datime_intrare = Convert.ToDateTime(data_inceput);
+                    DateTime datime_sfarsit = Convert.ToDateTime(data_sfarsit);
+
+                    DateTime curent = DateTime.Now;
+
+                    int rezult = DateTime.Compare(datime_intrare, curent);
+                    int rezult1 = DateTime.Compare(curent, datime_sfarsit);
+
+                    if (rezult == -1 && rezult1 == -1)
+                        return true;
+                    else return false;
+                }
+            }
+            return false; 
+        }
+
+        private void update_concediu()
+        {
+            List<string> angajat = new List<string>(); 
+
+            con.Open();
+            SqlCommand command = new SqlCommand("Select [Cod angajat] from Salarii", con);
+            SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read()) angajat.Add(reader["Cod angajat"].ToString());
+            con.Close();
+            
+            for (int i = 0; i < angajat.Count(); i++)
+            {
+                if (in_concediu(angajat[i].ToString()) == true)
+                {
+                    con.Open();
+                    SqlCommand command2 = new SqlCommand("UPDATE Salarii SET Concediu=1 WHERE [Cod angajat]='"+ angajat[i].ToString() +"'", con);
+                    command2.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+        }
+
+
 
         // salariu method - calcul salariu pe zi din hartie
         // trebuie sa facem update si de salariu in master !!!
