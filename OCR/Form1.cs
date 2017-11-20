@@ -379,7 +379,7 @@ namespace OCR
 
         private void update_spor_in_salariu(List<string> merit_spor)
         {
-            //in functie de merti seface update in tabela salariu
+            //in functie de merti seface update in tabela salariu 
         }
 
         // salariu method - calcul salariu pe zi din hartie
