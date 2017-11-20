@@ -44,9 +44,7 @@ namespace OCR
             webcam.InitializeWebCam(ref pictureBox1);
             webcam.Start();
             refresh_codes();
-            //update_day_work();
-            //update_spor_in_salariu(merit_spor());
-            //update_concediu();
+            calculare_completare_salariu();
         }
 
 
@@ -173,7 +171,7 @@ namespace OCR
 
         // Metodele principale din spatele butoanelor
 
-        //Intrare
+        //Intrare                           Atentie ! Verifica daca nu este in concediu
         private void button1_Click(object sender, EventArgs e)
         {
             webcam.Stop();  
@@ -205,7 +203,7 @@ namespace OCR
 
         }
 
-        //Iesire
+        //Iesire                           
         private void button3_Click_1(object sender, EventArgs e)
         {
             webcam.Stop();
@@ -294,7 +292,7 @@ namespace OCR
 
         // Update database per day
 
-        // verifica daca s-a inchis aplicatia si actualizeaza master-ul si dupa se apeleaza cele trei metode de mai jos
+        // verifica daca s-a inchis aplicatia , actualizeaza master-ul si dupa se apeleaza calcularea salariului
 
         private void update_day_work()
         {
@@ -469,9 +467,123 @@ namespace OCR
             }
         }
 
-        private void calcularea_salariului()
+        private void update_salariu(string salariu,string cod_angajat)
         {
+            con.Open();
+            SqlCommand command2 = new SqlCommand("UPDATE Salarii SET Salariu='" + salariu + "' WHERE [Cod angajat]='" + cod_angajat + "'", con); 
+            command2.ExecuteNonQuery();
+            con.Close();
+        }
 
+        private void calculare_completare_salariu()
+        { 
+            List<string> angajati_in_concediu = new List<string>();
+            List<string> angajati = new List<string>();
+            List<string> spor_meritat = new List<string>();
+
+            string salariu;
+            int contor = -1;
+
+            spor_meritat = merit_spor();
+            
+            //update_day_work();
+            //update_spor_in_salariu(spor_meritat);
+            //update_concediu();
+
+            con.Open(); 
+            SqlCommand command0 = new SqlCommand("Select [Cod angajat] from Salarii Where Concediu=1", con);
+            SqlDataReader reader0 = command0.ExecuteReader();
+            while (reader0.Read()) angajati_in_concediu.Add(reader0["Cod angajat"].ToString());
+            con.Close();
+
+            con.Open();
+            SqlCommand command1 = new SqlCommand("Select [Cod angajat] from Salarii", con);
+            SqlDataReader reader1 = command1.ExecuteReader();
+            while (reader1.Read()) angajati.Add(reader1["Cod angajat"].ToString());
+            con.Close();
+
+            foreach(string s in angajati)
+            { contor++;
+                foreach(string e in angajati_in_concediu)
+                {
+                    if (s == e)
+                    {
+                        con.Open();
+                        SqlCommand command2 = new SqlCommand("UPDATE Salarii SET Salariu=20 WHERE [Cod angajat]='" + e.ToString() + "'", con);
+                        command2.ExecuteNonQuery();
+                        con.Close();
+                    }
+
+                    else
+                    {
+                        string functie, salariu_de_baza, renumeratie_pe_spor, spor_de_stres;
+
+                        con.Open();
+                        SqlCommand command3 = new SqlCommand("Select [Id functie] from Salarii WHERE [Cod angajat]='" + s.ToString() + "'", con);
+                        SqlDataReader reader3 = command3.ExecuteReader();
+                        reader3.Read();
+                        functie =reader3["Id functie"].ToString();
+                        con.Close();
+
+                        if(functie == "4" || functie == "5")
+                        {
+                            salariu_de_baza = "";
+                            renumeratie_pe_spor = "";
+
+                            con.Open();
+                            SqlCommand command4 = new SqlCommand("Select Functii.[Salariu de baza] From Functii INNER JOIN Salarii ON Salarii.[Id functie]=Functii.[Id] WHERE Salarii.[Cod angajat]='" + s.ToString() + "'", con);
+                            SqlDataReader reader4 = command4.ExecuteReader();
+                            reader4.Read();
+                            salariu_de_baza = reader4["Salariu de baza"].ToString();
+                            con.Close();
+
+                            con.Open();
+                            SqlCommand command5 = new SqlCommand("Select Sporuri.[Renumeratie] From Sporuri INNER JOIN Salarii ON Salarii.[Id spor]=Sporuri.[Id] WHERE Salarii.[Cod angajat]='" + s.ToString() + "'", con);
+                            SqlDataReader reader5 = command5.ExecuteReader();
+                            reader5.Read();
+                            renumeratie_pe_spor = reader5["Renumeratie"].ToString();
+                            con.Close();
+
+                            con.Open();
+                            SqlCommand command6 = new SqlCommand("Select Sporuri.[Renumeratie] From Sporuri Where Sporuri.[Id]=1", con);
+                            SqlDataReader reader6 = command6.ExecuteReader();
+                            reader6.Read();
+                            spor_de_stres = reader6["Renumeratie"].ToString();
+                            con.Close();
+                             
+                            salariu = (float.Parse(salariu_de_baza) + float.Parse(spor_de_stres) + (float.Parse(renumeratie_pe_spor) * int.Parse(spor_meritat[contor]))).ToString();
+
+                            update_salariu(salariu, s.ToString());
+                        }
+                        else
+                        {
+
+                            salariu_de_baza = "";
+                            renumeratie_pe_spor = "";
+
+                            con.Open();
+                            SqlCommand command4 = new SqlCommand("Select Functii.[Salariu de baza] From Functii INNER JOIN Salarii ON Salarii.[Id functie]=Functii.[Id] WHERE Salarii.[Cod angajat]='" + s.ToString() + "'", con);
+                            SqlDataReader reader4 = command4.ExecuteReader();
+                            reader4.Read();
+                            salariu_de_baza = reader4["Salariu de baza"].ToString();
+                            con.Close();
+
+                            con.Open();
+                            SqlCommand command5 = new SqlCommand("Select Sporuri.[Renumeratie] From Sporuri INNER JOIN Salarii ON Salarii.[Id spor]=Sporuri.[Id] WHERE Salarii.[Cod angajat]='" + s.ToString() + "'", con);
+                            SqlDataReader reader5 = command5.ExecuteReader();
+                            reader5.Read();
+                            renumeratie_pe_spor = reader5["Renumeratie"].ToString();
+                            con.Close();
+
+                            salariu = (float.Parse(salariu_de_baza) + (float.Parse(renumeratie_pe_spor) * int.Parse(spor_meritat[contor]))).ToString();
+
+                            update_salariu(salariu, s.ToString());
+                        }
+
+
+                    }
+                }
+            }
         }
 
         // salariu method - calcul salariu pe zi din hartie
