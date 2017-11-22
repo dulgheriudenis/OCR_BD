@@ -155,20 +155,67 @@ namespace OCR
       
             // Metodele din spatele butoanelor
 
-            //Intrare                           Atentie ! Verifica daca nu este in concediu
+            //Intrare                           Atentie ! Verificare metoda verificare de concediu si verifica daca functioneaza verificarea de logarea in prealabil
         private void button1_Click(object sender, EventArgs e)
         {
+            List<string> angajat = new List<string>();
+            List<string> ora_iesire = new List<string>();
+            bool in_concediu = false;
+
             webcam.Stop();  
             if (scanare() == true)
             {
                 con.Open();
-                SqlCommand command = new SqlCommand("INSERT INTO Intrari ([Cod Angajat],[Ora intrare])  Values ('" + ocr.Text.ToString() + "','" + System.DateTime.Now.Year.ToString() + "-" + System.DateTime.Now.Month.ToString() + "-" + System.DateTime.Now.Day.ToString() + " " + System.DateTime.Now.Hour.ToString() + ":" + System.DateTime.Now.Minute.ToString() + ":" + System.DateTime.Now.Second.ToString() + "')", con);
-                command.ExecuteNonQuery();
-
+                SqlCommand com1= new SqlCommand("Select [Cod angajat] From Concedii", con);
+                SqlDataReader reader1 = com1.ExecuteReader();
+                while (reader1.Read())
+                {
+                    angajat.Add(reader1["Cod angajat"].ToString());
+                }
                 con.Close();
-                MessageBox.Show("Bine ati venit la serviciu !","Recunoscut");
+
+                foreach (string s in angajat)
+                {
+                    if(s== ocr.Text.ToString())
+                    {
+                        in_concediu = true;
+                    }
+                }
+
+                angajat.Clear();
+
+                if (in_concediu != true)
+                {
+                    con.Open();
+                    SqlCommand com = new SqlCommand("Select [Cod angajat],[Ora iesire] From Intrari", con);
+                    SqlDataReader reader = com.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        angajat.Add(reader["Cod angajat"].ToString());
+                        ora_iesire.Add(reader["Ora iesire"].ToString());
+                    }
+                    con.Close();
+
+                    for (int i = 0; i < angajat.Count(); i++)
+                        if (ocr.Text.ToString() == angajat[i])
+                        {
+                            if (ora_iesire[i] != "")
+                            {
+                                con.Open();
+                                SqlCommand command = new SqlCommand("INSERT INTO Intrari ([Cod angajat],[Ora intrare])  Values ('" + ocr.Text.ToString() + "','" + System.DateTime.Now.Year.ToString() + "-" + System.DateTime.Now.Month.ToString() + "-" + System.DateTime.Now.Day.ToString() + " " + System.DateTime.Now.Hour.ToString() + ":" + System.DateTime.Now.Minute.ToString() + ":" + System.DateTime.Now.Second.ToString() + "')", con);
+                                command.ExecuteNonQuery();
+                                con.Close();
+                                MessageBox.Show("Bine ati venit la serviciu !", "Recunoscut");
+                            }
+                            else MessageBox.Show("Angajatul nu se poate loga daca nu s-a delogat in prealabil !");
+                        }
+                }
+                else MessageBox.Show("Angajatul este in concediu !");
+
                 incercari = 0;
                 detectat = false;
+
+
             }
             else
             {
@@ -186,60 +233,81 @@ namespace OCR
              
 
         }
-            //Iesire                            Atentie ! Verifica daca nu este in concediu
+            //Iesire                            Atentie ! Verifica metoda de verificare de concediu
         private void button3_Click_1(object sender, EventArgs e)
         {
+            List<string> angajat = new List<string>();
+            bool in_concediu = false;
             webcam.Stop();
             if (scanare() == true)
             {
-                string pozitie = pozition_in_table();
-                if (pozitie != "Angajatul nu s-a logat in prealabil !")
+                con.Open();
+                SqlCommand com1 = new SqlCommand("Select [Cod angajat] From Concedii", con);
+                SqlDataReader reader1 = com1.ExecuteReader();
+                while (reader1.Read())
                 {
-
-                    con.Open();
-                    SqlCommand command = new SqlCommand("UPDATE Intrari SET [Ora iesire]='" + System.DateTime.Now.Year.ToString() + "-" + System.DateTime.Now.Month.ToString() + "-" + System.DateTime.Now.Day.ToString() + " " + System.DateTime.Now.Hour.ToString() + ":" + System.DateTime.Now.Minute.ToString() + ":" + System.DateTime.Now.Second.ToString() + "' WHERE Id=" + pozitie, con);
-                    command.ExecuteNonQuery();
-                    con.Close();
-
-                    string intrare, iesire, ore_muncite_curente;
-
-                    con.Open();
-                    SqlCommand command2 = new SqlCommand("Select [Ora intrare] FROM Intrari WHERE Id=" + pozitie, con);
-                    SqlDataReader sqlDataReader = command2.ExecuteReader();
-                    sqlDataReader.Read();
-                    intrare = sqlDataReader["Ora intrare"].ToString();
-                    con.Close();
-
-
-                    con.Open();
-                    SqlCommand command3 = new SqlCommand("Select [Ora iesire] FROM Intrari WHERE Id=" + pozitie, con);
-                    SqlDataReader sqlDataReader2 = command3.ExecuteReader();
-                    sqlDataReader2.Read();
-                    iesire = sqlDataReader2["Ora iesire"].ToString();
-                    con.Close();
-
-                    con.Open();
-                    SqlCommand command4 = new SqlCommand("Select [Ore muncite] FROM Angajat WHERE [Cod angajat]='" + ocr.Text.ToString() + "'", con);
-                    SqlDataReader sqlDataReader3 = command4.ExecuteReader();
-                    sqlDataReader3.Read();
-                    ore_muncite_curente = sqlDataReader3["Ore muncite"].ToString();
-                    con.Close();
-
-                    int noua_suma_de_ore = int.Parse(ore_muncite_curente) + ore_muncite_pe_intrare_iesire(intrare, iesire);
-
-                    con.Open();
-                    SqlCommand command5 = new SqlCommand("UPDATE Angajat SET [Ore muncite]=" + noua_suma_de_ore + "WHERE [Cod angajat]='" + ocr.Text.ToString() + "'", con);
-                    command5.ExecuteNonQuery();
-                    con.Close();
-
-                    MessageBox.Show("O zi buna !", "Recunoscut");
-
-                    incercari = 0;
-                    detectat = false;
+                    angajat.Add(reader1["Cod angajat"].ToString());
                 }
-                else
+                con.Close();
+
+                foreach (string s in angajat)
                 {
-                    MessageBox.Show(pozitie);
+                    if (s == ocr.Text.ToString())
+                    {
+                        in_concediu = true;
+                    }
+                }
+
+                angajat.Clear();
+
+                if (in_concediu != true)
+                {
+                    string pozitie = pozition_in_table();
+                    if (pozitie != "Angajatul nu s-a logat in prealabil !")
+                    {
+
+                        con.Open();
+                        SqlCommand command = new SqlCommand("UPDATE Intrari SET [Ora iesire]='" + System.DateTime.Now.Year.ToString() + "-" + System.DateTime.Now.Month.ToString() + "-" + System.DateTime.Now.Day.ToString() + " " + System.DateTime.Now.Hour.ToString() + ":" + System.DateTime.Now.Minute.ToString() + ":" + System.DateTime.Now.Second.ToString() + "' WHERE Id=" + pozitie, con);
+                        command.ExecuteNonQuery();
+                        con.Close();
+
+                        string intrare, iesire, ore_muncite_curente;
+
+                        con.Open();
+                        SqlCommand command2 = new SqlCommand("Select [Ora intrare] FROM Intrari WHERE Id=" + pozitie, con);
+                        SqlDataReader sqlDataReader = command2.ExecuteReader();
+                        sqlDataReader.Read();
+                        intrare = sqlDataReader["Ora intrare"].ToString();
+                        con.Close();
+
+
+                        con.Open();
+                        SqlCommand command3 = new SqlCommand("Select [Ora iesire] FROM Intrari WHERE Id=" + pozitie, con);
+                        SqlDataReader sqlDataReader2 = command3.ExecuteReader();
+                        sqlDataReader2.Read();
+                        iesire = sqlDataReader2["Ora iesire"].ToString();
+                        con.Close();
+
+                        con.Open();
+                        SqlCommand command4 = new SqlCommand("Select [Ore muncite] FROM Angajat WHERE [Cod angajat]='" + ocr.Text.ToString() + "'", con);
+                        SqlDataReader sqlDataReader3 = command4.ExecuteReader();
+                        sqlDataReader3.Read();
+                        ore_muncite_curente = sqlDataReader3["Ore muncite"].ToString();
+                        con.Close();
+
+                        int noua_suma_de_ore = int.Parse(ore_muncite_curente) + ore_muncite_pe_intrare_iesire(intrare, iesire);
+
+                        con.Open();
+                        SqlCommand command5 = new SqlCommand("UPDATE Angajat SET [Ore muncite]=" + noua_suma_de_ore + "WHERE [Cod angajat]='" + ocr.Text.ToString() + "'", con);
+                        command5.ExecuteNonQuery();
+                        con.Close();
+
+                        MessageBox.Show("O zi buna !", "Recunoscut");
+
+                        incercari = 0;
+                        detectat = false;
+                    }
+                    else MessageBox.Show(pozitie);
                 }
             }
             else
@@ -256,13 +324,13 @@ namespace OCR
                 }
             }
         }
-            //Statistici                        Atentie ! La cautarea orelor lucrate de x angajat mesajul apare de cate ori cauti !!
+            //Statistici                        
         private void button4_Click(object sender, EventArgs e)
         {
             Bilant show = new Bilant();
             show.Show();
         }
-            //Admin zone                         Atentie ! Adauga o referinta in Master si Salarii la adaugarea unui nou anagajat !!
+            //Admin zone                        
         private void button2_Click(object sender, EventArgs e)
         {
             Admin admin = new Admin(next_code_number());

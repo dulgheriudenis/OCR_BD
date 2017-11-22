@@ -32,10 +32,22 @@ namespace OCR
                     try
                     {
                         SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=E:\Work\Anul III\Semestrul I\Baze de date\Proiect\OCR\OCR\Database1.mdf;Integrated Security=True");
+
                         connection.Open();
-                        SqlCommand command = new SqlCommand("INSERT INTO Angajat ([Cod Angajat],[Ora intrare])  Values ('" + code_number + "','" + nume_textBox.Text.ToString() + " " + prenume_textBox.Text.ToString() + "')", connection);
+                        SqlCommand command = new SqlCommand("INSERT INTO Angajat ([Cod Angajat],[Nume Prenume])  Values ('" + code_number + "','" + nume_textBox.Text.ToString() + " " + prenume_textBox.Text.ToString() + "')", connection);
                         command.ExecuteNonQuery();
                         connection.Close();
+
+                        connection.Open();
+                        SqlCommand command1 = new SqlCommand("INSERT INTO Salarii ([Cod Angajat],[Id functie])  Values ('" + code_number + "',1)", connection);
+                        command1.ExecuteNonQuery();
+                        connection.Close();
+
+                        connection.Open();
+                        SqlCommand command2 = new SqlCommand("INSERT INTO Master ([Cod Angajat])  Values ('" + code_number + "')", connection);
+                        command2.ExecuteNonQuery();
+                        connection.Close();
+
                         MessageBox.Show("Bine ati venit in sistem !");
 
                         nume_textBox.Clear();

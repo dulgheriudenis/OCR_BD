@@ -44,7 +44,7 @@ namespace OCR
                 int contor = 0;
                 List<string> ore = new List<string>();
                 SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=E:\Work\Anul III\Semestrul I\Baze de date\Proiect\OCR\OCR\Database1.mdf;Integrated Security=True");
-
+                nume_angajat.Clear();
                 connection.Open();
                 SqlCommand com = new SqlCommand("Select [Nume Prenume] From Angajat", connection);
                 SqlDataReader reader = com.ExecuteReader();
