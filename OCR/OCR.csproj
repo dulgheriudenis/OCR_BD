@@ -97,6 +97,7 @@
     <Compile Include="ConcediuAngajat.Designer.cs">
       <DependentUpon>ConcediuAngajat.cs</DependentUpon>
     </Compile>
+    <Compile Include="Exceptii.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

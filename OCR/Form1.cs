@@ -26,13 +26,13 @@ namespace OCR
         int incercari = 0;
         bool detectat = false;
         
-            //Constructor
+            // Constructor
         public Form1()
         {
             InitializeComponent(); 
         }
 
-            //Incarcare main-window-ului
+            // Incarcare main-window-ului
         private void Form1_Load(object sender, EventArgs e)
         {            
             ocr = new OcrEngine();
@@ -43,7 +43,7 @@ namespace OCR
             refresh_codes();
         }
 
-        //Metode auxiliare necesare implementarii functiilor programului
+            // Metode auxiliare necesare implementarii functiilor programului
         private void refresh_codes()
         {
             con.Open();
@@ -102,7 +102,9 @@ namespace OCR
         private string pozition_in_table()
         {
             int contor = 0;
-
+            id_intrare.Clear();
+            cod_angajat_intrare.Clear();
+            iesire_angajat.Clear();
 
             con.Open();
             SqlCommand com = new SqlCommand("Select Id,[Cod Angajat] From Intrari", con);
@@ -153,39 +155,21 @@ namespace OCR
 
         }
       
-            // Metodele din spatele butoanelor
+            // Metodele din "spatele" butoanelor
 
-            //Intrare                           Atentie ! Verificare metoda verificare de concediu si verifica daca functioneaza verificarea de logarea in prealabil
+            // Intrare                          
         private void button1_Click(object sender, EventArgs e)
         {
             List<string> angajat = new List<string>();
             List<string> ora_iesire = new List<string>();
-            bool in_concediu = false;
+            
 
             webcam.Stop();  
             if (scanare() == true)
-            {
-                con.Open();
-                SqlCommand com1= new SqlCommand("Select [Cod angajat] From Concedii", con);
-                SqlDataReader reader1 = com1.ExecuteReader();
-                while (reader1.Read())
+            { 
+                if (in_concediu(ocr.Text.ToString()) == false)
                 {
-                    angajat.Add(reader1["Cod angajat"].ToString());
-                }
-                con.Close();
-
-                foreach (string s in angajat)
-                {
-                    if(s== ocr.Text.ToString())
-                    {
-                        in_concediu = true;
-                    }
-                }
-
-                angajat.Clear();
-
-                if (in_concediu != true)
-                {
+                    bool flag = false;
                     con.Open();
                     SqlCommand com = new SqlCommand("Select [Cod angajat],[Ora iesire] From Intrari", con);
                     SqlDataReader reader = com.ExecuteReader();
@@ -198,23 +182,25 @@ namespace OCR
 
                     for (int i = 0; i < angajat.Count(); i++)
                         if (ocr.Text.ToString() == angajat[i])
-                        {
-                            if (ora_iesire[i] != "")
-                            {
-                                con.Open();
-                                SqlCommand command = new SqlCommand("INSERT INTO Intrari ([Cod angajat],[Ora intrare])  Values ('" + ocr.Text.ToString() + "','" + System.DateTime.Now.Year.ToString() + "-" + System.DateTime.Now.Month.ToString() + "-" + System.DateTime.Now.Day.ToString() + " " + System.DateTime.Now.Hour.ToString() + ":" + System.DateTime.Now.Minute.ToString() + ":" + System.DateTime.Now.Second.ToString() + "')", con);
-                                command.ExecuteNonQuery();
-                                con.Close();
-                                MessageBox.Show("Bine ati venit la serviciu !", "Recunoscut");
-                            }
-                            else MessageBox.Show("Angajatul nu se poate loga daca nu s-a delogat in prealabil !");
-                        }
+                            if (ora_iesire[i] != "") flag = true;
+                            else { flag = false; break; }
+
+
+                    if (flag == true)
+                    {
+                        con.Open();
+                        SqlCommand command = new SqlCommand("INSERT INTO Intrari ([Cod angajat],[Ora intrare])  Values ('" + ocr.Text.ToString() + "','" + System.DateTime.Now.Year.ToString() + "-" + System.DateTime.Now.Month.ToString() + "-" + System.DateTime.Now.Day.ToString() + " " + System.DateTime.Now.Hour.ToString() + ":" + System.DateTime.Now.Minute.ToString() + ":" + System.DateTime.Now.Second.ToString() + "')", con);
+                        command.ExecuteNonQuery();
+                        con.Close();
+                        MessageBox.Show("Bine ati venit la serviciu !", "Recunoscut");
+                    }
+                    else MessageBox.Show("Angajatul nu se poate loga daca nu s-a delogat in prealabil !");
+
                 }
                 else MessageBox.Show("Angajatul este in concediu !");
 
                 incercari = 0;
                 detectat = false;
-
 
             }
             else
@@ -233,34 +219,16 @@ namespace OCR
              
 
         }
-            //Iesire                            Atentie ! Verifica metoda de verificare de concediu
+            // Iesire                           
         private void button3_Click_1(object sender, EventArgs e)
         {
             List<string> angajat = new List<string>();
-            bool in_concediu = false;
+            
             webcam.Stop();
             if (scanare() == true)
             {
-                con.Open();
-                SqlCommand com1 = new SqlCommand("Select [Cod angajat] From Concedii", con);
-                SqlDataReader reader1 = com1.ExecuteReader();
-                while (reader1.Read())
-                {
-                    angajat.Add(reader1["Cod angajat"].ToString());
-                }
-                con.Close();
-
-                foreach (string s in angajat)
-                {
-                    if (s == ocr.Text.ToString())
-                    {
-                        in_concediu = true;
-                    }
-                }
-
-                angajat.Clear();
-
-                if (in_concediu != true)
+                
+                if (in_concediu(ocr.Text.ToString()) != true)
                 {
                     string pozitie = pozition_in_table();
                     if (pozitie != "Angajatul nu s-a logat in prealabil !")
@@ -309,6 +277,7 @@ namespace OCR
                     }
                     else MessageBox.Show(pozitie);
                 }
+                else MessageBox.Show("Angajatul este in concediu !");
             }
             else
             {
@@ -324,13 +293,13 @@ namespace OCR
                 }
             }
         }
-            //Statistici                        
+            // Statistici                        
         private void button4_Click(object sender, EventArgs e)
         {
             Bilant show = new Bilant();
             show.Show();
         }
-            //Admin zone                        
+            // Admin zone                        
         private void button2_Click(object sender, EventArgs e)
         {
             Admin admin = new Admin(next_code_number());
@@ -338,7 +307,7 @@ namespace OCR
         }
 
                 
-            //Matoda de actualizare a salariului si a totalului orelor muncite de catre angajati
+            // Matoda de actualizare a salariului si a totalului orelor muncite de catre angajati
         private void update_salariu_master()
         {
             List<string> salariu = new List<string>();
@@ -408,7 +377,7 @@ namespace OCR
             }
         }
 
-            //Metode de actualizare a campurilor tabelei Salarii
+            // Metode de actualizare a campurilor tabelei Salarii
         private void update_spor_in_salariu(List<string> merit_spor)
         {
             for (int i = 0; i < merit_spor.Count(); i++)
@@ -465,7 +434,7 @@ namespace OCR
             con.Close();
         }
 
-            //Metode auxiliare ce ajuta la buna functionare a bazei de date
+            // Metode auxiliare ce ajuta la buna functionare a bazei de date
         private List<string> merit_spor()
         {
             //merit in functie de ordinea in angajat
@@ -685,7 +654,7 @@ namespace OCR
             }
         }
 
-            //Metoda prin care se platesc angajatii
+            // Metoda prin care se platesc angajatii
         private void verify_if_payday_is_now()
         {
             List<string> zi_scadenta = new List<string>();
@@ -735,7 +704,7 @@ namespace OCR
             set_the_flags();
         }
 
-            //Actualizare zilnica
+            // Actualizare zilnica
         private void memory_today()
         {
             calculare_completare_salariu();
@@ -744,7 +713,6 @@ namespace OCR
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             //memory_today();
-            MessageBox.Show("goodbye");
         }
     }
 }

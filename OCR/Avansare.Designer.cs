@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.introducere_nume_anagajat_label = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.nume_angajat_textbox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.entry_radio_button = new System.Windows.Forms.RadioButton();
             this.standard_radio_button = new System.Windows.Forms.RadioButton();
@@ -49,12 +49,12 @@
             this.introducere_nume_anagajat_label.TabIndex = 0;
             this.introducere_nume_anagajat_label.Text = "Introduceti numele angajatului :";
             // 
-            // textBox1
+            // nume_angajat_textbox
             // 
-            this.textBox1.Location = new System.Drawing.Point(218, 33);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(162, 20);
-            this.textBox1.TabIndex = 1;
+            this.nume_angajat_textbox.Location = new System.Drawing.Point(218, 33);
+            this.nume_angajat_textbox.Name = "nume_angajat_textbox";
+            this.nume_angajat_textbox.Size = new System.Drawing.Size(162, 20);
+            this.nume_angajat_textbox.TabIndex = 1;
             // 
             // label1
             // 
@@ -144,7 +144,7 @@
             this.Controls.Add(this.standard_radio_button);
             this.Controls.Add(this.entry_radio_button);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.nume_angajat_textbox);
             this.Controls.Add(this.introducere_nume_anagajat_label);
             this.Name = "Avansare";
             this.Text = "Avansare";
@@ -156,7 +156,7 @@
         #endregion
 
         private System.Windows.Forms.Label introducere_nume_anagajat_label;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox nume_angajat_textbox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.RadioButton entry_radio_button;
         private System.Windows.Forms.RadioButton standard_radio_button;

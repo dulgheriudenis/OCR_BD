@@ -32,16 +32,16 @@
             this.password_textBox = new System.Windows.Forms.TextBox();
             this.verify_button = new System.Windows.Forms.Button();
             this.avanasare_button = new System.Windows.Forms.Button();
-            this.retrogradare_button = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.concediu_angajat_button = new System.Windows.Forms.Button();
             this.stergere_anagajat_button = new System.Windows.Forms.Button();
             this.introduceti_parola_label = new System.Windows.Forms.Label();
+            this.calcul_salarii_button = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // angajat_nou_button
             // 
-            this.angajat_nou_button.Location = new System.Drawing.Point(23, 95);
+            this.angajat_nou_button.Location = new System.Drawing.Point(36, 102);
             this.angajat_nou_button.Name = "angajat_nou_button";
             this.angajat_nou_button.Size = new System.Drawing.Size(81, 23);
             this.angajat_nou_button.TabIndex = 0;
@@ -71,24 +71,13 @@
             // 
             // avanasare_button
             // 
-            this.avanasare_button.Location = new System.Drawing.Point(173, 146);
+            this.avanasare_button.Location = new System.Drawing.Point(167, 102);
             this.avanasare_button.Name = "avanasare_button";
             this.avanasare_button.Size = new System.Drawing.Size(81, 23);
             this.avanasare_button.TabIndex = 3;
             this.avanasare_button.Text = "Avansare";
             this.avanasare_button.UseVisualStyleBackColor = true;
             this.avanasare_button.Click += new System.EventHandler(this.avanasare_button_Click);
-            // 
-            // retrogradare_button
-            // 
-            this.retrogradare_button.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
-            this.retrogradare_button.Location = new System.Drawing.Point(173, 95);
-            this.retrogradare_button.Name = "retrogradare_button";
-            this.retrogradare_button.Size = new System.Drawing.Size(81, 23);
-            this.retrogradare_button.TabIndex = 4;
-            this.retrogradare_button.Text = "Retrogradare";
-            this.retrogradare_button.UseVisualStyleBackColor = true;
-            this.retrogradare_button.Click += new System.EventHandler(this.retrogradare_button_Click);
             // 
             // label1
             // 
@@ -102,7 +91,7 @@
             // 
             // concediu_angajat_button
             // 
-            this.concediu_angajat_button.Location = new System.Drawing.Point(12, 146);
+            this.concediu_angajat_button.Location = new System.Drawing.Point(18, 160);
             this.concediu_angajat_button.Name = "concediu_angajat_button";
             this.concediu_angajat_button.Size = new System.Drawing.Size(99, 23);
             this.concediu_angajat_button.TabIndex = 6;
@@ -112,7 +101,7 @@
             // 
             // stergere_anagajat_button
             // 
-            this.stergere_anagajat_button.Location = new System.Drawing.Point(87, 206);
+            this.stergere_anagajat_button.Location = new System.Drawing.Point(84, 214);
             this.stergere_anagajat_button.Name = "stergere_anagajat_button";
             this.stergere_anagajat_button.Size = new System.Drawing.Size(99, 23);
             this.stergere_anagajat_button.TabIndex = 8;
@@ -130,16 +119,26 @@
             this.introduceti_parola_label.TabIndex = 9;
             this.introduceti_parola_label.Text = "Introduceti parola :";
             // 
+            // calcul_salarii_button
+            // 
+            this.calcul_salarii_button.Location = new System.Drawing.Point(167, 160);
+            this.calcul_salarii_button.Name = "calcul_salarii_button";
+            this.calcul_salarii_button.Size = new System.Drawing.Size(94, 23);
+            this.calcul_salarii_button.TabIndex = 10;
+            this.calcul_salarii_button.Text = "Efectuare bilant";
+            this.calcul_salarii_button.UseVisualStyleBackColor = true;
+            this.calcul_salarii_button.Click += new System.EventHandler(this.calcul_salarii_button_Click);
+            // 
             // Admin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(288, 261);
+            this.Controls.Add(this.calcul_salarii_button);
             this.Controls.Add(this.introduceti_parola_label);
             this.Controls.Add(this.stergere_anagajat_button);
             this.Controls.Add(this.concediu_angajat_button);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.retrogradare_button);
             this.Controls.Add(this.avanasare_button);
             this.Controls.Add(this.verify_button);
             this.Controls.Add(this.password_textBox);
@@ -157,10 +156,10 @@
         private System.Windows.Forms.TextBox password_textBox;
         private System.Windows.Forms.Button verify_button;
         private System.Windows.Forms.Button avanasare_button;
-        private System.Windows.Forms.Button retrogradare_button;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button concediu_angajat_button;
         private System.Windows.Forms.Button stergere_anagajat_button;
         private System.Windows.Forms.Label introduceti_parola_label;
+        private System.Windows.Forms.Button calcul_salarii_button;
     }
 }
