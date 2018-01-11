@@ -23,16 +23,28 @@ namespace OCR
 
         private void verify_button_Click(object sender, EventArgs e)
         {
-            if (password_textBox.Text == "admin")
+            try
             {
-                password_textBox.Visible = false;
-                verify_button.Visible = false;
-                introduceti_parola_label.Visible = false;
-                angajat_nou_button.Visible = true;
-                concediu_angajat_button.Visible = true;
-                avanasare_button.Visible = true;
-                stergere_anagajat_button.Visible = true;
-                calcul_salarii_button.Visible = true;
+                if (password_textBox.Text == "admin")
+                {
+                    password_textBox.Visible = false;
+                    verify_button.Visible = false;
+                    introduceti_parola_label.Visible = false;
+                    angajat_nou_button.Visible = true;
+                    concediu_angajat_button.Visible = true;
+                    avanasare_button.Visible = true;
+                    stergere_anagajat_button.Visible = true;
+                    calcul_salarii_button.Visible = true;
+                }
+                else
+                {
+                    password_textBox.Text = "";
+                    throw new Exception("Parola introdusa este gresita! Te rugam sa mai incerci.");
+                }
+            }
+            catch(Exception exc)
+            {
+                MessageBox.Show(exc.Message.ToString(), "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

@@ -69,31 +69,38 @@ namespace OCR
 
         private void procesare_button_Click(object sender, EventArgs e)
         {
-            if (nume_angajat_textbox.Text != "")
+            try
             {
-                
-                if(entry_radio_button.Checked)
+                if (nume_angajat_textbox.Text != "")
                 {
-                    // mai fa inca o metoda de gestiune a mesajelor din metoda avansare in grad 
-                    avansare_in_grad(nume_angajat_textbox.Text, 4);
+
+                    if (entry_radio_button.Checked)
+                    {
+                        // mai fa inca o metoda de gestiune a mesajelor din metoda avansare in grad 
+                        avansare_in_grad(nume_angajat_textbox.Text, 4);
+                    }
+                    else if (standard_radio_button.Checked)
+                    {
+
+                    }
+                    else if (manager_radio_button.Checked)
+                    {
+
+                    }
+                    else if (director_radio_button.Checked)
+                    {
+
+                    }
+                    else throw new Exception("Va rugam sa selectati una din nivelurile profesionale oferite !");
+
+
                 }
-                else if(standard_radio_button.Checked)
-                     {
-
-                     }
-                     else if(manager_radio_button.Checked)
-                           {
-
-                           }
-                           else  if(director_radio_button.Checked)
-                                {
-
-                                }
-                                 else MessageBox.Show("Va rugam sa selectati una din nivelurile profesionale oferite !");
-
-
+                else throw new Exception("Nu ati completat numele anagajatului !");
             }
-            else MessageBox.Show("Nu ati completat numele anagajatului !");
+            catch(Exception exc)
+            {
+                MessageBox.Show(exc.Message.ToString(), "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void renuntare_button_Click(object sender, EventArgs e)

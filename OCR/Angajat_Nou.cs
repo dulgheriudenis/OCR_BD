@@ -24,14 +24,14 @@ namespace OCR
 
         private void save_button_Click(object sender, EventArgs e)
         {
-            if(nume_textBox.Text != "" && prenume_textBox.Text != "" && CNP_textBox.Text.ToString() != "")
+            try
             {
-                if (CNP_textBox.Text.Length == 13)
+                SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=E:\Work\Anul III\Semestrul I\Baze de date\Proiect\OCR\OCR\Database1.mdf;Integrated Security=True");
+                
+                if (nume_textBox.Text != "" && prenume_textBox.Text != "" && CNP_textBox.Text.ToString() != "")
                 {
-                    try
+                    if (CNP_textBox.Text.Length == 13)
                     {
-                        SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=E:\Work\Anul III\Semestrul I\Baze de date\Proiect\OCR\OCR\Database1.mdf;Integrated Security=True");
-
                         connection.Open();
                         SqlCommand command = new SqlCommand("INSERT INTO Angajat ([Cod Angajat],[Nume Prenume],[CNP],[Inceput contract])  Values ('" + code_number + "','" + nume_textBox.Text.ToString() + " " + prenume_textBox.Text.ToString() + "','" + CNP_textBox.Text.ToString() + "','" + System.DateTime.Now + "')", connection);
                         command.ExecuteNonQuery();
@@ -46,34 +46,45 @@ namespace OCR
                         SqlCommand command2 = new SqlCommand("INSERT INTO Master ([Cod Angajat])  Values ('" + code_number + "')", connection);
                         command2.ExecuteNonQuery();
                         connection.Close();
-                        
+
                         MessageBox.Show("Succes !");
 
                         nume_textBox.Clear();
                         prenume_textBox.Clear();
                         CNP_textBox.Clear();
 
-                        code_number = next_code_number(); 
+                        code_number = next_code_number();
 
                     }
-                    catch(Exception exception)
-                    {
-                        MessageBox.Show(exception.ToString(),"Error");
-                    }
+                    else throw new Exception("CNP-ul introdus are doar " + CNP_textBox.Text.Length + " cifre." + 
+                        Environment.NewLine + "Un CNP are 13 cifre !!!");
                 }
-                else MessageBox.Show("CNP ul are doar " + CNP_textBox.Text.Length, "Atentie");
+                else throw new Exception("Nu sunt completate toate campurile !");
+
             }
-            else MessageBox.Show("Nu sunt completate toate campurile !", "Atentie");
+            catch(Exception exc)
+            {
+                MessageBox.Show(exc.Message.ToString(), "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            
+        
         }
 
         private void refresh_codes()
         {
-            SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=E:\Work\Anul III\Semestrul I\Baze de date\Proiect\OCR\OCR\Database1.mdf;Integrated Security=True");
-            con.Open();
-            SqlCommand com = new SqlCommand("Select [Cod Angajat] From Angajat", con);
-            SqlDataReader reader = com.ExecuteReader();
-            while (reader.Read()) cod_angajat.Add(reader["Cod Angajat"].ToString());
-            con.Close();
+            try
+            {
+                SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=E:\Work\Anul III\Semestrul I\Baze de date\Proiect\OCR\OCR\Database1.mdf;Integrated Security=True");
+                con.Open();
+                SqlCommand com = new SqlCommand("Select [Cod Angajat] From Angajat", con);
+                SqlDataReader reader = com.ExecuteReader();
+                while (reader.Read()) cod_angajat.Add(reader["Cod Angajat"].ToString());
+                con.Close();
+            }
+            catch(Exception exc)
+            {
+                MessageBox.Show(exc.Message.ToString(), "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         public string next_code_number()
