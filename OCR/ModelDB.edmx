@@ -1,0 +1,422 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="Database1Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Angajat">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Cod Angajat" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Nume Prenume" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Ore muncite" Type="int" Nullable="false" />
+          <Property Name="CNP" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Inceput contract" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Concedii">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Cod angajat" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Data inceput de concediu" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="Data sfarsit de concediu" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Functii">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Functie" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Program" Type="int" Nullable="false" />
+          <Property Name="Salariu de baza" Type="money" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Intrari">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Cod angajat" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Ora intrare" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="Ora iesire" Type="datetime2" Precision="7" />
+        </EntityType>
+        <EntityType Name="Master">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Cod angajat" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Salariu" Type="money" Nullable="false" />
+          <Property Name="Zi scadenta" Type="int" Nullable="false" />
+          <Property Name="Total ore" Type="int" Nullable="false" />
+          <Property Name="Flag" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Salarii">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Cod angajat" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Salariu" Type="money" Nullable="false" />
+          <Property Name="Id spor" Type="int" Nullable="false" />
+          <Property Name="Id functie" Type="int" Nullable="false" />
+          <Property Name="Concediu" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Sporuri">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Denumire spor " Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Renumeratie" Type="money" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'C:\USERS\STEFA\DESKTOP\OCR\OCR\OCR\DATABASE1.MDF.dbo.ListaVechimeAngajat' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="ListaVechimeAngajat">
+          <Key>
+            <PropertyRef Name="Nume Prenume" />
+            <PropertyRef Name="Inceput contract" />
+          </Key>
+          <Property Name="Nume Prenume" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Inceput contract" Type="datetime" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'C:\USERS\STEFA\DESKTOP\OCR\OCR\OCR\DATABASE1.MDF.dbo.TopAngajati' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="TopAngajati">
+          <Key>
+            <PropertyRef Name="Nume Prenume" />
+            <PropertyRef Name="Id functie" />
+          </Key>
+          <Property Name="Nume Prenume" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Id functie" Type="int" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'C:\USERS\STEFA\DESKTOP\OCR\OCR\OCR\DATABASE1.MDF.dbo.VedereSalarii' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="VedereSalarii">
+          <Key>
+            <PropertyRef Name="Nume Prenume" />
+            <PropertyRef Name="Salariu" />
+          </Key>
+          <Property Name="Nume Prenume" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Salariu" Type="money" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'C:\USERS\STEFA\DESKTOP\OCR\OCR\OCR\DATABASE1.MDF.dbo.VedereSalariiNet' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="VedereSalariiNet">
+          <Key>
+            <PropertyRef Name="Salariu" />
+          </Key>
+          <Property Name="Salariu" Type="money" Nullable="false" />
+        </EntityType>
+        <Function Name="AngajatiDupaFunctii" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="functie" Type="int" Mode="In" />
+        </Function>
+        <Function Name="VerificaConcediuAngajat" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="nume_angajat" Type="nvarchar" Mode="In" />
+        </Function>
+        <EntityContainer Name="Database1ModelStoreContainer">
+          <EntitySet Name="Angajat" EntityType="Self.Angajat" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Concedii" EntityType="Self.Concedii" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Functii" EntityType="Self.Functii" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Intrari" EntityType="Self.Intrari" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Master" EntityType="Self.Master" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Salarii" EntityType="Self.Salarii" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Sporuri" EntityType="Self.Sporuri" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ListaVechimeAngajat" EntityType="Self.ListaVechimeAngajat" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [ListaVechimeAngajat].[Nume Prenume] AS [Nume Prenume], 
+    [ListaVechimeAngajat].[Inceput contract] AS [Inceput contract]
+    FROM [dbo].[ListaVechimeAngajat] AS [ListaVechimeAngajat]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="TopAngajati" EntityType="Self.TopAngajati" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [TopAngajati].[Nume Prenume] AS [Nume Prenume], 
+    [TopAngajati].[Id functie] AS [Id functie]
+    FROM [dbo].[TopAngajati] AS [TopAngajati]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="VedereSalarii" EntityType="Self.VedereSalarii" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [VedereSalarii].[Nume Prenume] AS [Nume Prenume], 
+    [VedereSalarii].[Salariu] AS [Salariu]
+    FROM [dbo].[VedereSalarii] AS [VedereSalarii]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="VedereSalariiNet" EntityType="Self.VedereSalariiNet" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [VedereSalariiNet].[Salariu] AS [Salariu]
+    FROM [dbo].[VedereSalariiNet] AS [VedereSalariiNet]</DefiningQuery>
+          </EntitySet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="Database1Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Angajat">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Cod_Angajat" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Nume_Prenume" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Ore_muncite" Type="Int32" Nullable="false" />
+          <Property Name="CNP" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Inceput_contract" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="Concedii">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Cod_angajat" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Data_inceput_de_concediu" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Data_sfarsit_de_concediu" Type="DateTime" Nullable="false" Precision="7" />
+        </EntityType>
+        <EntityType Name="Functii">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Functie" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Program" Type="Int32" Nullable="false" />
+          <Property Name="Salariu_de_baza" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Intrari">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Cod_angajat" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Ora_intrare" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Ora_iesire" Type="DateTime" Precision="7" />
+        </EntityType>
+        <EntityType Name="Master">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Cod_angajat" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Salariu" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="Zi_scadenta" Type="Int32" Nullable="false" />
+          <Property Name="Total_ore" Type="Int32" Nullable="false" />
+          <Property Name="Flag" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Salarii">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Cod_angajat" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Salariu" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+          <Property Name="Id_spor" Type="Int32" Nullable="false" />
+          <Property Name="Id_functie" Type="Int32" Nullable="false" />
+          <Property Name="Concediu" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Sporuri">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Denumire_spor_" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Renumeratie" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ListaVechimeAngajat">
+          <Key>
+            <PropertyRef Name="Nume_Prenume" />
+            <PropertyRef Name="Inceput_contract" />
+          </Key>
+          <Property Name="Nume_Prenume" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Inceput_contract" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="TopAngajati">
+          <Key>
+            <PropertyRef Name="Nume_Prenume" />
+            <PropertyRef Name="Id_functie" />
+          </Key>
+          <Property Name="Nume_Prenume" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Id_functie" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="VedereSalarii">
+          <Key>
+            <PropertyRef Name="Nume_Prenume" />
+            <PropertyRef Name="Salariu" />
+          </Key>
+          <Property Name="Nume_Prenume" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Salariu" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+        </EntityType>
+        <EntityType Name="VedereSalariiNet">
+          <Key>
+            <PropertyRef Name="Salariu" />
+          </Key>
+          <Property Name="Salariu" Type="Decimal" Precision="19" Scale="4" Nullable="false" />
+        </EntityType>
+        <EntityContainer Name="Database1Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Angajats" EntityType="Self.Angajat" />
+          <EntitySet Name="Concediis" EntityType="Self.Concedii" />
+          <EntitySet Name="Functiis" EntityType="Self.Functii" />
+          <EntitySet Name="Intraris" EntityType="Self.Intrari" />
+          <EntitySet Name="Masters" EntityType="Self.Master" />
+          <EntitySet Name="Salariis" EntityType="Self.Salarii" />
+          <EntitySet Name="Sporuris" EntityType="Self.Sporuri" />
+          <EntitySet Name="ListaVechimeAngajats" EntityType="Self.ListaVechimeAngajat" />
+          <EntitySet Name="TopAngajatis" EntityType="Self.TopAngajati" />
+          <EntitySet Name="VedereSalariis" EntityType="Self.VedereSalarii" />
+          <EntitySet Name="VedereSalariiNets" EntityType="Self.VedereSalariiNet" />
+          <FunctionImport Name="AngajatiDupaFunctii" ReturnType="Collection(String)">
+            <Parameter Name="functie" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="VerificaConcediuAngajat" ReturnType="Collection(Database1Model.VerificaConcediuAngajat_Result)">
+            <Parameter Name="nume_angajat" Mode="In" Type="String" />
+          </FunctionImport>
+        </EntityContainer>
+        <ComplexType Name="VerificaConcediuAngajat_Result">
+          <Property Type="DateTime" Name="Data_inceput_de_concediu" Nullable="false" />
+          <Property Type="DateTime" Name="Data_sfarsit_de_concediu" Nullable="false" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="Database1ModelStoreContainer" CdmEntityContainer="Database1Entities">
+          <EntitySetMapping Name="Angajats">
+            <EntityTypeMapping TypeName="Database1Model.Angajat">
+              <MappingFragment StoreEntitySet="Angajat">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Cod_Angajat" ColumnName="Cod Angajat" />
+                <ScalarProperty Name="Nume_Prenume" ColumnName="Nume Prenume" />
+                <ScalarProperty Name="Ore_muncite" ColumnName="Ore muncite" />
+                <ScalarProperty Name="CNP" ColumnName="CNP" />
+                <ScalarProperty Name="Inceput_contract" ColumnName="Inceput contract" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Concediis">
+            <EntityTypeMapping TypeName="Database1Model.Concedii">
+              <MappingFragment StoreEntitySet="Concedii">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Cod_angajat" ColumnName="Cod angajat" />
+                <ScalarProperty Name="Data_inceput_de_concediu" ColumnName="Data inceput de concediu" />
+                <ScalarProperty Name="Data_sfarsit_de_concediu" ColumnName="Data sfarsit de concediu" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Functiis">
+            <EntityTypeMapping TypeName="Database1Model.Functii">
+              <MappingFragment StoreEntitySet="Functii">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Functie" ColumnName="Functie" />
+                <ScalarProperty Name="Program" ColumnName="Program" />
+                <ScalarProperty Name="Salariu_de_baza" ColumnName="Salariu de baza" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Intraris">
+            <EntityTypeMapping TypeName="Database1Model.Intrari">
+              <MappingFragment StoreEntitySet="Intrari">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Cod_angajat" ColumnName="Cod angajat" />
+                <ScalarProperty Name="Ora_intrare" ColumnName="Ora intrare" />
+                <ScalarProperty Name="Ora_iesire" ColumnName="Ora iesire" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Masters">
+            <EntityTypeMapping TypeName="Database1Model.Master">
+              <MappingFragment StoreEntitySet="Master">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Cod_angajat" ColumnName="Cod angajat" />
+                <ScalarProperty Name="Salariu" ColumnName="Salariu" />
+                <ScalarProperty Name="Zi_scadenta" ColumnName="Zi scadenta" />
+                <ScalarProperty Name="Total_ore" ColumnName="Total ore" />
+                <ScalarProperty Name="Flag" ColumnName="Flag" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Salariis">
+            <EntityTypeMapping TypeName="Database1Model.Salarii">
+              <MappingFragment StoreEntitySet="Salarii">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Cod_angajat" ColumnName="Cod angajat" />
+                <ScalarProperty Name="Salariu" ColumnName="Salariu" />
+                <ScalarProperty Name="Id_spor" ColumnName="Id spor" />
+                <ScalarProperty Name="Id_functie" ColumnName="Id functie" />
+                <ScalarProperty Name="Concediu" ColumnName="Concediu" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Sporuris">
+            <EntityTypeMapping TypeName="Database1Model.Sporuri">
+              <MappingFragment StoreEntitySet="Sporuri">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Denumire_spor_" ColumnName="Denumire spor " />
+                <ScalarProperty Name="Renumeratie" ColumnName="Renumeratie" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ListaVechimeAngajats">
+            <EntityTypeMapping TypeName="Database1Model.ListaVechimeAngajat">
+              <MappingFragment StoreEntitySet="ListaVechimeAngajat">
+                <ScalarProperty Name="Nume_Prenume" ColumnName="Nume Prenume" />
+                <ScalarProperty Name="Inceput_contract" ColumnName="Inceput contract" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TopAngajatis">
+            <EntityTypeMapping TypeName="Database1Model.TopAngajati">
+              <MappingFragment StoreEntitySet="TopAngajati">
+                <ScalarProperty Name="Nume_Prenume" ColumnName="Nume Prenume" />
+                <ScalarProperty Name="Id_functie" ColumnName="Id functie" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VedereSalariis">
+            <EntityTypeMapping TypeName="Database1Model.VedereSalarii">
+              <MappingFragment StoreEntitySet="VedereSalarii">
+                <ScalarProperty Name="Nume_Prenume" ColumnName="Nume Prenume" />
+                <ScalarProperty Name="Salariu" ColumnName="Salariu" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VedereSalariiNets">
+            <EntityTypeMapping TypeName="Database1Model.VedereSalariiNet">
+              <MappingFragment StoreEntitySet="VedereSalariiNet">
+                <ScalarProperty Name="Salariu" ColumnName="Salariu" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="AngajatiDupaFunctii" FunctionName="Database1Model.Store.AngajatiDupaFunctii" />
+          <FunctionImportMapping FunctionImportName="VerificaConcediuAngajat" FunctionName="Database1Model.Store.VerificaConcediuAngajat">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="Database1Model.VerificaConcediuAngajat_Result">
+                <ScalarProperty Name="Data_inceput_de_concediu" ColumnName="Data inceput de concediu" />
+                <ScalarProperty Name="Data_sfarsit_de_concediu" ColumnName="Data sfarsit de concediu" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

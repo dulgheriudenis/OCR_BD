@@ -16,7 +16,7 @@ namespace OCR
         WebCam webcam;
         
             // Crearea conexiunii intre aplicatie si baza de date
-        SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=E:\Work\Anul III\Semestrul I\Baze de date\Proiect\OCR\OCR\Database1.mdf;Integrated Security=True");
+        SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=E:\Work\Anul III\Semestrul I\Baze de date\Proiect\OCR\OCR\OCR\Database1.mdf;Integrated Security=True");
 
             // Liste si variabile globale
         List<string> cod_angajat = new List<string>();
@@ -37,6 +37,7 @@ namespace OCR
         {            
             ocr = new OcrEngine();
             webcam = new WebCam();
+            erase_hours_for_today();
             verify_if_payday_is_now();
             webcam.InitializeWebCam(ref pictureBox1);
             webcam.Start();
@@ -141,14 +142,8 @@ namespace OCR
         }
         private int ore_muncite_pe_intrare_iesire(string intrare, string iesire)
         {
-            string numar_intrare = "", numar_iesire = "";
-
-            numar_intrare += intrare[15];
-            numar_intrare += intrare[16];
-
-            numar_iesire += iesire[15];
-            numar_iesire += iesire[16];
-
+            string numar_intrare = intrare, numar_iesire = iesire;
+            
             if (int.Parse(numar_intrare) < int.Parse(numar_iesire))
                 return int.Parse(numar_iesire) - int.Parse(numar_intrare);
             else return 60 - int.Parse(numar_intrare) + int.Parse(numar_iesire);
@@ -170,6 +165,7 @@ namespace OCR
                 if (in_concediu(ocr.Text.ToString()) == false)
                 {
                     bool flag = false;
+                    bool angajat_nou = false;
                     con.Open();
                     SqlCommand com = new SqlCommand("Select [Cod angajat],[Ora iesire] From Intrari", con);
                     SqlDataReader reader = com.ExecuteReader();
@@ -184,9 +180,9 @@ namespace OCR
                         if (ocr.Text.ToString() == angajat[i])
                             if (ora_iesire[i] != "") flag = true;
                             else { flag = false; break; }
+                        else { if (i == angajat.Count() - 1) angajat_nou = true; }
 
-
-                    if (flag == true)
+                    if (flag == true || angajat_nou == true) 
                     {
                         con.Open();
                         SqlCommand command = new SqlCommand("INSERT INTO Intrari ([Cod angajat],[Ora intrare])  Values ('" + ocr.Text.ToString() + "','" + System.DateTime.Now.Year.ToString() + "-" + System.DateTime.Now.Month.ToString() + "-" + System.DateTime.Now.Day.ToString() + " " + System.DateTime.Now.Hour.ToString() + ":" + System.DateTime.Now.Minute.ToString() + ":" + System.DateTime.Now.Second.ToString() + "')", con);
@@ -246,14 +242,17 @@ namespace OCR
                         SqlDataReader sqlDataReader = command2.ExecuteReader();
                         sqlDataReader.Read();
                         intrare = sqlDataReader["Ora intrare"].ToString();
+                        DateTime intr = Convert.ToDateTime(intrare);
+                        intrare = intr.Minute.ToString();
                         con.Close();
-
 
                         con.Open();
                         SqlCommand command3 = new SqlCommand("Select [Ora iesire] FROM Intrari WHERE Id=" + pozitie, con);
                         SqlDataReader sqlDataReader2 = command3.ExecuteReader();
                         sqlDataReader2.Read();
                         iesire = sqlDataReader2["Ora iesire"].ToString();
+                        DateTime iesir = Convert.ToDateTime(iesire);
+                        iesire = iesir.Minute.ToString();
                         con.Close();
 
                         con.Open();
@@ -303,6 +302,7 @@ namespace OCR
         private void button2_Click(object sender, EventArgs e)
         {
             Admin admin = new Admin(next_code_number());
+            calculare_completare_salariu();
             admin.Show();
         }
 
@@ -325,11 +325,23 @@ namespace OCR
             while (reader1.Read()) cod_angajati.Add(reader1["Cod angajat"].ToString());
             con.Close();
 
+            List<string> salariu_vechi = new List<string>();
+            con.Open();
+            SqlCommand command2 = new SqlCommand("Select [Salariu] From Master", con);
+            SqlDataReader reader2 = command2.ExecuteReader();
+            while (reader2.Read()) salariu_vechi.Add(reader2["Salariu"].ToString());
+            con.Close();
+
             for (int i = 0; i < salariu.Count(); i++)
             {
+                salariu[i] = (float.Parse(salariu_vechi[i]) + float.Parse(salariu[i])).ToString();
+            }
+
+                for (int i = 0; i < salariu.Count(); i++)
+            {
                 con.Open();
-                SqlCommand command2 = new SqlCommand("UPDATE Master SET Salariu='" + salariu[i] + "' WHERE [Cod angajat]='" + cod_angajat[i] + "'", con);
-                command2.ExecuteNonQuery();
+                SqlCommand command3 = new SqlCommand("UPDATE Master SET Salariu='" + salariu[i] + "' WHERE [Cod angajat]='" + cod_angajat[i] + "'", con);
+                command3.ExecuteNonQuery();
                 con.Close();
             }
 
@@ -712,7 +724,7 @@ namespace OCR
         }
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            //memory_today();
+            memory_today();
         }
     }
 }

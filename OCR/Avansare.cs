@@ -8,7 +8,7 @@ namespace OCR
 {
     public partial class Avansare : Form
     {
-        SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=E:\Work\Anul III\Semestrul I\Baze de date\Proiect\OCR\OCR\Database1.mdf;Integrated Security=True");
+        SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=E:\Work\Anul III\Semestrul I\Baze de date\Proiect\OCR\OCR\OCR\Database1.mdf;Integrated Security=True");
 
         public Avansare()
         {
@@ -50,7 +50,7 @@ namespace OCR
                         commandu.ExecuteNonQuery();
 
                         con.Close();
-
+                        MessageBox.Show("Succes !", "Succes !", MessageBoxButtons.OK);
                         return 100; // avanasare cu succes !
                     }
                     else { if(int.Parse(functie_angajat[i]) >= grad) return int.Parse(functie_angajat[1]); } // intoarece gradul angajatului
@@ -62,8 +62,10 @@ namespace OCR
 
             if(recunoscut == false)
             {
+                MessageBox.Show("Nu exista in baza de date !", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return -199;//nu exita in baza de date 
             }
+            MessageBox.Show("Ceva nu a mers bine !", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return -200; //ceva nu a mers bine
         }
 
@@ -76,20 +78,22 @@ namespace OCR
 
                     if (entry_radio_button.Checked)
                     {
-                        // mai fa inca o metoda de gestiune a mesajelor din metoda avansare in grad 
                         avansare_in_grad(nume_angajat_textbox.Text, 4);
                     }
                     else if (standard_radio_button.Checked)
                     {
 
+                        avansare_in_grad(nume_angajat_textbox.Text, 3);
                     }
                     else if (manager_radio_button.Checked)
                     {
 
+                        avansare_in_grad(nume_angajat_textbox.Text, 2);
                     }
                     else if (director_radio_button.Checked)
                     {
 
+                        avansare_in_grad(nume_angajat_textbox.Text, 1);
                     }
                     else throw new Exception("Va rugam sa selectati una din nivelurile profesionale oferite !");
 

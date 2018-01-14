@@ -8,7 +8,7 @@ namespace OCR
     public partial class Admin : Form
     {
         string next_code_number;
-        SqlConnection con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=E:\Work\Anul III\Semestrul I\Baze de date\Proiect\OCR\OCR\Database1.mdf;Integrated Security=True");
+        SqlConnection con = new SqlConnection(@"Data Source = (LocalDB)\MSSQLLocalDB; AttachDbFilename=C:\Users\stefa\Desktop\OCR\OCR\OCR\Database1.mdf;Integrated Security = True");
 
         public Admin(string code)
         {
@@ -82,33 +82,8 @@ namespace OCR
 
         private void calcul_salarii_button_Click(object sender, EventArgs e)
         {
-            List<string> salariu = new List<string>();
-
-            con.Open();
-            SqlCommand command = new SqlCommand("Select * FROM VedereSalariiNet", con);
-            SqlDataReader reader = command.ExecuteReader();
-            List<string> list = new List<string>();
-            
-            while (reader.Read())
-                list.Add(reader["Salariu"].ToString());
-            
-            con.Close();
-
-            con.Open();
-            SqlCommand command1 = new SqlCommand("SELECT Functii.[Salariu de baza] FROM Functii INNER JOIN Salarii ON Salarii.[Id functie]=Functii.Id", con);
-            SqlDataReader reader1 = command1.ExecuteReader();
-            List<string> list1 = new List<string>();
-
-            while (reader1.Read())
-                salariu.Add(reader1["Salariu de baza"].ToString());
-
-            con.Close();
-
-            List<float> salariul = new List<float>();
-
-            for (int i = 0; i < salariu.Count; i++)
-                salariul.Add(float.Parse(salariu[i].ToString()) * 20);
-            // pune in data grid view nume angajat / sold curent / sold de baza
+            Tabel_cu_salarii tabel_Cu_Salarii = new Tabel_cu_salarii();
+            tabel_Cu_Salarii.Show();
         }
     }
 }

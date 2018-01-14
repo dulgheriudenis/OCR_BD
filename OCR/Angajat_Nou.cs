@@ -26,7 +26,7 @@ namespace OCR
         {
             try
             {
-                SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=E:\Work\Anul III\Semestrul I\Baze de date\Proiect\OCR\OCR\Database1.mdf;Integrated Security=True");
+                SqlConnection connection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\stefa\Desktop\OCR\OCR\OCR\Database1.mdf;Integrated Security=True");
                 
                 if (nume_textBox.Text != "" && prenume_textBox.Text != "" && CNP_textBox.Text.ToString() != "")
                 {
